@@ -31,6 +31,7 @@
 </head>
 <body>
   <h1>Welcome to My PWA</h1>
+  <button id="add-button">Add Recipe</button>
   <ul id="recipe-list"></ul>
   <script>
     if ('serviceWorker' in navigator) {
@@ -40,18 +41,35 @@
     }
   </script>
   <script src="recipes.js"></script>
+  <script src="db.js"></script>
   <script>
-    const list = document.getElementById('recipe-list');
-    if (window.recipes && Array.isArray(window.recipes)) {
-      window.recipes.forEach(r => {
+    async function renderRecipes() {
+      const list = document.getElementById('recipe-list');
+      list.innerHTML = '';
+      let items = await getRecipes();
+      if (items.length === 0 && window.recipes) {
+        await seedRecipes(window.recipes);
+        items = await getRecipes();
+      }
+      items.forEach(r => {
+        let icon = r.icon;
+        if (!icon) {
+          icon = r.type && r.type.toLowerCase().includes('mead') ? '🍯' : '🥃';
+        }
         const li = document.createElement('li');
         li.className = 'recipe-item';
-        li.innerHTML = `<span class="icon">${r.icon}</span>` +
+        li.innerHTML = `<span class="icon">${icon}</span>` +
           `<span class="name">${r.name}</span> - ` +
           `<span class="type">${r.type}</span>`;
         list.appendChild(li);
       });
     }
+
+    document.getElementById('add-button').addEventListener('click', () => {
+      window.location.href = 'add.html';
+    });
+
+    renderRecipes();
   </script>
 </body>
 </html>
