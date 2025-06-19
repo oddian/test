@@ -48,7 +48,6 @@ async function deleteRecipe(id) {
     request.onerror = () => reject(request.error);
   });
 }
-
 async function seedRecipes(recipes) {
   const db = await openDB();
   const tx = db.transaction(STORE_NAME, 'readwrite');
