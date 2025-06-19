@@ -11,3 +11,13 @@ python3 -m http.server 8000
 ```
 
 Then open `http://localhost:8000` in a browser that supports PWAs.
+
+## Testing
+
+Run `npm install` to install development dependencies, then execute:
+
+```bash
+npm test
+```
+
+This runs the Jest test suite using a fake IndexedDB implementation.
