@@ -2,7 +2,10 @@ const CACHE_NAME = 'pwa-cache-v1';
 const ASSETS = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/add.html',
+  '/manifest.json',
+  '/db.js',
+  '/recipes.js'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(

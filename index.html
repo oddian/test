@@ -11,16 +11,23 @@
       padding: 0;
       margin: 0;
     }
-    .recipe-item {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      border-bottom: 1px solid #ccc;
-    }
-    .recipe-item .icon {
-      font-size: 1.5rem;
-      margin-right: 8px;
-    }
+      .recipe-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-bottom: 1px solid #ccc;
+      }
+      .recipe-item .icon {
+        font-size: 1.5rem;
+        margin-right: 8px;
+      }
+      .delete-btn {
+        margin-left: auto;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
     @media (min-width: 600px) {
       #recipe-list {
         width: 400px;
@@ -31,6 +38,7 @@
 </head>
 <body>
   <h1>Welcome to My PWA</h1>
+  <button id="add-button">Add Recipe</button>
   <ul id="recipe-list"></ul>
   <script>
     if ('serviceWorker' in navigator) {
@@ -40,18 +48,45 @@
     }
   </script>
   <script src="recipes.js"></script>
+  <script src="db.js"></script>
   <script>
-    const list = document.getElementById('recipe-list');
-    if (window.recipes && Array.isArray(window.recipes)) {
-      window.recipes.forEach(r => {
+    async function renderRecipes() {
+      const list = document.getElementById('recipe-list');
+      list.innerHTML = '';
+      let items = await getRecipes();
+      if (items.length === 0 && window.recipes) {
+        await seedRecipes(window.recipes);
+        items = await getRecipes();
+      }
+      items.forEach(r => {
+        let icon = r.icon;
+        if (!icon) {
+          icon = r.type && r.type.toLowerCase().includes('mead') ? '🍯' : '🥃';
+        }
         const li = document.createElement('li');
         li.className = 'recipe-item';
-        li.innerHTML = `<span class="icon">${r.icon}</span>` +
+        li.innerHTML =
+          `<span class="icon">${icon}</span>` +
           `<span class="name">${r.name}</span> - ` +
-          `<span class="type">${r.type}</span>`;
+          `<span class="type">${r.type}</span>` +
+          `<button class="delete-btn" data-id="${r.id}">🗑️</button>`;
         list.appendChild(li);
       });
     }
+
+    document.getElementById('recipe-list').addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-btn')) {
+        const id = Number(e.target.dataset.id);
+        await deleteRecipe(id);
+        renderRecipes();
+      }
+    });
+
+    document.getElementById('add-button').addEventListener('click', () => {
+      window.location.href = 'add.html';
+    });
+
+    renderRecipes();
   </script>
 </body>
 </html>
